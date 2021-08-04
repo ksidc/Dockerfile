@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  php:
+    image: php-7.3:7.3.12
+    volumes:
+      - /data/www:/usr/local/html   # php root directory
+      - /data/php/php.ini:/etc/php.ini   # php.ini config
+  web:
+    image: nginx-1.17:1.17.6
+    volumes:
+      - /data/www:/usr/local/html               # nginx root directory
+      - /data/nginx/nginx.conf:/usr/local/conf/nginx.conf       # nginx common config
+      - /data/nginx/vhosts:/usr/local/conf.d     # nginx vhosts config
+    ports:
+      - "80:80"
+      - "443:443"
+    external_links:
+      - php:php

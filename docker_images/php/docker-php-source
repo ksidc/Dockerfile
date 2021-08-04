@@ -1,0 +1,43 @@
+#!/bin/sh
+set -e
+
+src_dir=/usr/src
+php_dir=/usr/src/php
+
+usage() {
+	echo "usage: $0 COMMAND"
+	echo
+	echo "Manage php source tarball lifecycle."
+	echo
+	echo "Commands:"
+	echo "   extract  extract php source tarball into directory $php_dir if not already done."
+	echo "   delete   delete extracted php source located into $php_dir if not already done."
+	echo
+}
+
+case "$1" in
+	install)
+                apk add --no-cache curl
+                mkdir -p "$src_dir"
+                cd "$src_dir"
+                curl -fsSL -o php.tar.xz "$PHP_URL"
+                apk del --no-cache curl
+                ;;
+
+	extract)
+		mkdir -p "$php_dir"
+		if [ ! -f "$php_dir/.docker-extracted" ]; then
+			tar -Jxf "$src_dir/php.tar.xz" -C "$php_dir" --strip-components=1
+			touch "$php_dir/.docker-extracted"
+		fi
+		;;
+
+	delete)
+		rm -rf "$src_dir"
+		;;
+
+	*)
+		usage
+		exit 1
+		;;
+esac
